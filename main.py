@@ -25,8 +25,7 @@ import pyperclip
 
 USERNAME = 'kismet'
 PASSWORD = 'kismet'
-IP = '192.168.1.167'
-DISTANCE = 2000
+IP = 'localhost'
 MUTE = True
 
 #####################################
@@ -36,8 +35,8 @@ MUTE = True
 #####################################
 
 BLACK = "#2C3333"
-DARK_GREEN = "#395B64"
-LIGHT_GREEN = "#A5C9CA"
+DARK_GREEN = "#212529"
+LIGHT_GREEN = "#dee2e6"
 OFF_WHITE = "#E7F6F2"
 RED = '#ff0000'
 ORANGE = '#ffa700'
@@ -76,8 +75,6 @@ class RSSIBar:
         self.first_location = ''
         self.first_location_time = 0
         self.current_location = ''
-        self.distance = 0
-        self.following_macs = []
 
         self.style = ttk.Style()
         self.style.theme_use('default')
@@ -105,18 +102,6 @@ class RSSIBar:
 
         self.channel_panel = tk.PanedWindow(master=self.root, bg=BLACK)
         self.channel_panel.grid(column=0, row=3)
-
-        self.following_panel = tk.PanedWindow(master=self.root, bg=BLACK)
-        self.following_panel.grid(column=4, row=1, rowspan=3)
-
-        self.following_copy = tk.Button(
-            master=self.following_panel,
-            command=self.copy_follows,
-            text=f"Copy Possible Follows\nCurrently: {len(self.following_macs)}",
-            bg=DARK_GREEN,
-            fg=OFF_WHITE,
-            font=FONT)
-        self.following_copy.grid(column=0, row=0)
 
         self.mac_label = tk.Label(text="Enter MAC, ex: FF:FF:FF:FF:FF:FF", bg=BLACK, fg=LIGHT_GREEN, font=FONT)
         self.mac_label.grid(column=0, row=0)
@@ -221,7 +206,6 @@ class RSSIBar:
         if self.first_location == '' or self.first_location == [0, 0]:
             self.get_location()
         if self.current_time - self.start_time >= 60:
-            self.calc_dist()
             self.start_time = self.current_time
         if self.df:
             self.get_rssi(self.current_mac)
@@ -310,9 +294,6 @@ class RSSIBar:
     def copy_location(self):
         pyperclip.copy(f'{self.best_lat} {self.best_lon}')
 
-    def copy_follows(self):
-        pyperclip.copy(f'{self.following_macs}')
-
     def get_location(self):
         response3 = requests.post(
             url=f"http://{USERNAME}:{PASSWORD}@{IP}:2501/gps/location.json", json=self.location_params).json()
@@ -323,31 +304,6 @@ class RSSIBar:
         else:
             self.current_location = response3['kismet.common.location.geopoint']
             self.current_location.reverse()
-
-    def calc_dist(self):
-        self.get_location()
-        self.distance += geodesic(self.first_location, self.current_location).m
-        if self.distance >= DISTANCE:
-            self.following_macs = []
-            time_params = {
-                'fields': ['kismet.device.base.macaddr',
-                           'kismet.device.base.first_time'
-                           ]
-            }
-            clock = time()
-            response4 = requests.post(
-                url=f"http://{USERNAME}:{PASSWORD}@{IP}:2501/devices/last-time/{clock - 5}/devices.json",
-                json=time_params
-            ).json()
-            for item in response4:
-                if item['kismet.device.base.first_time'] <= self.first_location_time:
-                    self.following_macs.append(item['kismet.device.base.macaddr'])
-            self.following_copy['text'] = f"Copy Possible Follows\nCurrently: {len(self.following_macs)}"
-            self.first_location = self.current_location
-            self.first_location_time = clock
-            self.distance = 0
-        else:
-            pass
 
     def play_audio(self, rssi):
         frequency = 700 - ((rssi*-1)*5)
