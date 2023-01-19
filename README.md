@@ -4,11 +4,21 @@ The Kismet RSSI Bar is a Kismet addon to find APs and client devices based on RS
 The Kismet RSSI Bar relies on the Kismet API and requires the device that is running
 the RSSI bar to be either on the same network or same device. 
 
-## Linux Requirements
- 
- * sudo apt install xclip
- * sudo apt install python-tk
- * sudo apt install libportaudio2
+##  Installation Requirements
+
+```
+$ sudo apt install xclip
+$ sudo apt install python-tk
+$ sudo apt install libportaudio2
+$ pip3 install -r requirements.txt
+```
+
+## Launching
+After Kismet is running, run the following:
+````
+cd kismet_rssi_bar
+$ python3 main.py
+````
 
 ## Adjustable Constants
 
