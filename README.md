@@ -16,7 +16,7 @@ $ pip3 install -r requirements.txt
 ## Launching
 After Kismet is running, run the following:
 ````
-cd kismet_rssi_bar
+$ cd kismet_rssi_bar
 $ python3 main.py
 ````
 
@@ -37,5 +37,5 @@ DISTANCE is in meters.
 ## Notes
 
 This project was developed while working on Angela Yu's 100 Days of Code
-and is being continously updated with better coding practices. Version 2 of
+and is being continuously updated with better coding practices. Version 2 of
 this project will most likely be in a web interface. 
