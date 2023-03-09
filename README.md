@@ -20,6 +20,10 @@ $ cd kismet_rssi_bar
 $ python3 main.py
 ````
 
+## Manual
+![RSSI-Bar](https://user-images.githubusercontent.com/96986202/224187301-ce3f64cb-a8f8-48a7-9996-1b5e91860955.png)
+
+
 ## Adjustable Constants
 
 ![image](https://user-images.githubusercontent.com/96986202/203411908-3631558c-8e68-4379-9c5f-edbc3b1e4694.png)
