@@ -6,18 +6,26 @@ the RSSI bar to be either on the same network or same device.
 
 ##  Installation Requirements
 
+### Dependencies
+
 ```
-$ sudo apt install xclip
-$ sudo apt install python-tk
-$ sudo apt install libportaudio2
-$ pip3 install -r requirements.txt
+sudo apt install xclip
+sudo apt install python-tk
+sudo apt install libportaudio2
+```
+
+### Python Imports
+
+```
+cd Kismet-RSSI-Bar
+pip3 install -r requirements.txt
 ```
 
 ## Launching
 After Kismet is running, run the following:
 ````
-$ cd kismet_rssi_bar
-$ python3 main.py
+cd Kismet-RSSI-Bar
+python3 main.py
 ````
 
 ## Manual
