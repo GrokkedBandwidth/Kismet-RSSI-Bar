@@ -1,10 +1,10 @@
 from tkinter import ttk
 from pysinewave import SineWave
 from time import time
-from geopy.distance import geodesic
 import tkinter as tk
 import requests
 import pyperclip
+import mgrs
 
 #####################################
 # Author: Grokked Bandwidth         #
@@ -46,6 +46,7 @@ L_GREEN = '#a3ff00'
 GREY = "#413F42"
 FONT = ("Arial", 10, "bold")
 RSSI_FONT = ("Arial", 16, "bold")
+mgrs_converter = mgrs.MGRS()
 
 class RSSIBar:
     def __init__(self):
@@ -75,6 +76,7 @@ class RSSIBar:
         self.first_location = ''
         self.first_location_time = 0
         self.current_location = ''
+        self.mgrs = ''
 
         self.style = ttk.Style()
         self.style.theme_use('default')
@@ -138,7 +140,7 @@ class RSSIBar:
         self.location_button = tk.Button(
             master=self.best_panel,
             command=self.copy_location,
-            text=self.update_best_location(0, 0),
+            text=self.update_best_location(0),
             bg=DARK_GREEN,
             fg=OFF_WHITE,
             font=FONT)
@@ -242,7 +244,8 @@ class RSSIBar:
         try:
             self.best_lat = json[0]['kismet.common.location.geopoint'][1]
             self.best_lon = json[0]['kismet.common.location.geopoint'][0]
-            self.location_button['text'] = self.update_best_location(self.best_lat, self.best_lon)
+            self.mgrs = mgrs_converter.toMGRS(self.best_lat, self.best_lon)
+            self.location_button['text'] = self.update_best_location(self.mgrs)
         except TypeError:
             pass
 
@@ -258,8 +261,8 @@ class RSSIBar:
     def channel_update(self, channel):
         return f"Current Channel: {channel}"
 
-    def update_best_location(self, lat, lon):
-        return f"Best Seen Location: Lat: {lat} Lon: {lon}\nClick to copy"
+    def update_best_location(self, mgrs):
+        return f"Best Seen Location: {mgrs}\nClick to copy"
 
     def rssi_color(self, rssi):
         global RED, GREY, GREEN, L_GREEN, ORANGE, YELLOW
@@ -292,7 +295,7 @@ class RSSIBar:
         self.mac_entry.insert('end', pyperclip.paste())
 
     def copy_location(self):
-        pyperclip.copy(f'{self.best_lat} {self.best_lon}')
+        pyperclip.copy(f'{self.mgrs}')
 
     def get_location(self):
         response3 = requests.post(
